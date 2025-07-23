@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Roteiros da Cartomante</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    textarea { width: 100%; height: 200px; margin-top: 10px; }
+    button { margin: 5px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>🔮 Gerador de Roteiros de Cartomante</h1>
+  <button onclick="gerarRoteiro()">✨ Gerar Roteiro</button>
+  <div id="resultado">
+    <textarea id="texto" placeholder="Seu roteiro aparecerá aqui..."></textarea>
+  </div>
+  <h2>🌐 Traduzir roteiro</h2>
+  <button onclick="traduzir('en')">🇺🇸 Inglês</button>
+  <button onclick="traduzir('es')">🇪🇸 Espanhol</button>
+  <button onclick="traduzir('ar')">🇸🇦 Árabe</button>
+
+  <script>
+    async function gerarRoteiro() {
+      const res = await fetch('/gerar', { method: 'POST' });
+      const data = await res.json();
+      document.getElementById("texto").value = data.texto || "❌ Erro.";
+    }
+
+    async function traduzir(lang) {
+      const textoOriginal = document.getElementById("texto").value;
+      if (!textoOriginal) return alert("Gere um roteiro primeiro!");
+
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl=${lang}&dt=t&q=${encodeURIComponent(textoOriginal)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const traducao = data[0].map(p => p[0]).join("");
+      document.getElementById("texto").value = traducao;
+    }
+  </script>
+</body>
+</html>
